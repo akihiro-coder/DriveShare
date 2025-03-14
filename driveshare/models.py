@@ -1,7 +1,9 @@
-from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 
-db = SQLAlchemy()
+from flask_sqlalchemy import SQLAlchemy
+
+from driveshare import db
+
 
 class Route(db.Model):
     __tablename__ = 'routes'
