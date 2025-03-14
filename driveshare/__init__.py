@@ -1,17 +1,30 @@
 from flask import Flask
 from flask_migrate import Migrate
-from models import db  # 既に定義してあるはず
+from flask_sqlalchemy import SQLAlchemy
+from flask_wtf.csrf import CSRFProtect
+
+import config
 
 
-def create_app():
+db = SQLAlchemy()
+migrate = Migrate()
+csrf = CSRFProtect()
+
+def create_app(config_class=config.Config):
+    # Flaskアプリケーションのインスタンス作成
     app = Flask(__name__)
 
-    # 設定
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://ユーザー名:パスワード@localhost/DB名'
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    # アプリケーションの設定読み込み
+    app.config.from_object(config_class)
 
-    # DBとMigrate初期化
+    # 拡張機能の初期化
     db.init_app(app)
-    migrate = Migrate(app, db)
+    migrate.init_app(app, db)
+    csrf.init_app(app)
+
+    # ルーティングのインポート
+    with app.app_context():
+        from driveshare.routes import main
+        from driveshare import forms, models
 
     return app
