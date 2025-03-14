@@ -24,7 +24,6 @@ def create_app(config_class=config.Config):
 
     # ルーティングのインポート
     with app.app_context():
-        from driveshare.routes import main
-        from driveshare import forms, models
+        from driveshare import routes, forms, models
 
     return app
