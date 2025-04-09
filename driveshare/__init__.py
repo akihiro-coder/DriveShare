@@ -1,14 +1,8 @@
 from flask import Flask
-from flask_migrate import Migrate
-from flask_sqlalchemy import SQLAlchemy
-from flask_wtf.csrf import CSRFProtect
 
+from driveshare.extensions import db, migrate, csrf
 import config
 
-
-db = SQLAlchemy()
-migrate = Migrate()
-csrf = CSRFProtect()
 
 def create_app(config_class=config.Config):
     # Flaskアプリケーションのインスタンス作成
@@ -22,8 +16,13 @@ def create_app(config_class=config.Config):
     migrate.init_app(app, db)
     csrf.init_app(app)
 
-    # ルーティングのインポート
+    # モデル, APIルートをFlaskに認識/登録させる。
     with app.app_context():
-        from driveshare import routes, forms, models
+        # モデルをインポート（マイグレーションで必要）
+        from driveshare import models
+
+        # APIルーティングを登録
+        from driveshare.api.routes import api_bp
+        app.register_blueprint(api_bp)
 
     return app
